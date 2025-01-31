@@ -1,6 +1,6 @@
-# Conversor de PDF para TXT
+# Conversor de PDF para TXT/DOCX
 
-Um aplicativo simples para converter arquivos PDF em texto, funcionando totalmente offline no seu computador.
+Um aplicativo simples para converter arquivos PDF em texto ou DOCX, funcionando totalmente offline no seu computador.
 
 ## Como usar no MacBook
 
@@ -38,9 +38,29 @@ npm run dev
 
 O aplicativo estará disponível em `http://localhost:8080`
 
+## Criando um executável para Mac
+
+1. **Instale o pacote electron-builder globalmente**
+
+```bash
+npm install -g electron-builder
+```
+
+2. **Crie o executável**
+
+```bash
+# Construa o aplicativo
+npm run build
+
+# Crie o executável
+electron-builder --mac
+```
+
+O executável será criado na pasta `dist` do projeto.
+
 ## Funcionalidades
 
-- Conversão de PDF para TXT
+- Conversão de PDF para TXT ou DOCX
 - Interface intuitiva
 - Funcionamento 100% offline
 - Download do texto extraído
