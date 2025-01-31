@@ -4,28 +4,40 @@ import { Upload, FileText } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface PDFUploaderProps {
-  onFileSelect: (file: File) => void;
+  onFileSelect: (files: File[]) => void;
+  maxFiles?: number;
 }
 
-const PDFUploader = ({ onFileSelect }: PDFUploaderProps) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const PDFUploader = ({ onFileSelect, maxFiles = 10 }: PDFUploaderProps) => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
-      if (file && file.type === "application/pdf") {
-        setSelectedFile(file);
-        onFileSelect(file);
-      } else {
+      const pdfFiles = acceptedFiles.filter(file => file.type === "application/pdf");
+      
+      if (pdfFiles.length === 0) {
         toast({
           variant: "destructive",
           title: "Erro no upload",
           description: "Por favor, selecione apenas arquivos PDF.",
         });
+        return;
       }
+
+      if (pdfFiles.length > maxFiles) {
+        toast({
+          variant: "destructive",
+          title: "Limite excedido",
+          description: `Você pode selecionar até ${maxFiles} arquivos por vez.`,
+        });
+        return;
+      }
+
+      setSelectedFiles(pdfFiles);
+      onFileSelect(pdfFiles);
     },
-    [onFileSelect, toast]
+    [onFileSelect, maxFiles, toast]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -33,7 +45,8 @@ const PDFUploader = ({ onFileSelect }: PDFUploaderProps) => {
     accept: {
       "application/pdf": [".pdf"],
     },
-    multiple: false,
+    multiple: true,
+    maxFiles,
   });
 
   return (
@@ -49,10 +62,19 @@ const PDFUploader = ({ onFileSelect }: PDFUploaderProps) => {
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center gap-4">
-          {selectedFile ? (
+          {selectedFiles.length > 0 ? (
             <>
               <FileText className="w-12 h-12 text-pdf-DEFAULT" />
-              <p className="text-lg font-medium">{selectedFile.name}</p>
+              <div className="space-y-2">
+                <p className="text-lg font-medium">
+                  {selectedFiles.length} arquivo{selectedFiles.length !== 1 ? 's' : ''} selecionado{selectedFiles.length !== 1 ? 's' : ''}
+                </p>
+                <ul className="text-sm text-gray-500">
+                  {selectedFiles.map((file, index) => (
+                    <li key={index}>{file.name}</li>
+                  ))}
+                </ul>
+              </div>
             </>
           ) : (
             <>
@@ -60,11 +82,11 @@ const PDFUploader = ({ onFileSelect }: PDFUploaderProps) => {
               <div>
                 <p className="text-lg font-medium">
                   {isDragActive
-                    ? "Solte o arquivo aqui"
-                    : "Arraste e solte seu arquivo PDF aqui"}
+                    ? "Solte os arquivos aqui"
+                    : "Arraste e solte seus arquivos PDF aqui"}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  ou clique para selecionar
+                  ou clique para selecionar (máximo {maxFiles} arquivos)
                 </p>
               </div>
             </>

@@ -2,11 +2,12 @@ import { Button } from "./ui/button";
 import { Download } from "lucide-react";
 
 interface TextDisplayProps {
+  fileName?: string;
   text: string | null;
   isLoading: boolean;
 }
 
-const TextDisplay = ({ text, isLoading }: TextDisplayProps) => {
+const TextDisplay = ({ fileName, text, isLoading }: TextDisplayProps) => {
   const handleDownload = () => {
     if (!text) return;
 
@@ -14,7 +15,7 @@ const TextDisplay = ({ text, isLoading }: TextDisplayProps) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "texto-extraido.txt";
+    link.download = fileName ? `${fileName}.txt` : "texto-extraido.txt";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -39,7 +40,9 @@ const TextDisplay = ({ text, isLoading }: TextDisplayProps) => {
     <div className="w-full max-w-2xl mx-auto mt-8">
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Texto Extraído:</h2>
+          <h2 className="text-xl font-semibold">
+            {fileName ? `Texto Extraído: ${fileName}` : "Texto Extraído:"}
+          </h2>
           <Button
             onClick={handleDownload}
             variant="outline"
