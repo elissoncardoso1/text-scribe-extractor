@@ -8,6 +8,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader, FolderOpen } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import PDFUploader from "./PDFUploader";
 import TextDisplay from "./TextDisplay";
 
@@ -29,6 +36,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
   const [outputPath, setOutputPath] = useState<string>("");
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [progress, setProgress] = useState(0);
+  const [format, setFormat] = useState<"txt" | "docx">("txt");
 
   const handleFileSelect = async (files: File[]) => {
     if (files.length > 0) {
@@ -56,7 +64,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
     
     setResult({
       fileName: selectedFile.name,
-      text: `Texto convertido do arquivo ${selectedFile.name}.\nSalvo em: ${outputPath}/${selectedFile.name}.txt`,
+      text: `Texto convertido do arquivo ${selectedFile.name}.\nSalvo em: ${outputPath}/${selectedFile.name}.${format}`,
       outputPath
     });
     
@@ -69,6 +77,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
     setOutputPath("");
     setResult(null);
     setProgress(0);
+    setFormat("txt");
   };
 
   return (
@@ -85,13 +94,27 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
 
         <div className="py-4">
           {step === "upload" && (
-            <PDFUploader onFileSelect={handleFileSelect} maxFiles={1} />
+            <div className="space-y-4">
+              <PDFUploader onFileSelect={handleFileSelect} maxFiles={1} />
+              <Select value={format} onValueChange={(value: "txt" | "docx") => setFormat(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione o formato" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="txt">TXT</SelectItem>
+                  <SelectItem value="docx">DOCX</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           )}
 
           {step === "output" && selectedFile && (
             <div className="space-y-4">
               <p className="text-sm text-gray-500">
                 Arquivo selecionado: {selectedFile.name}
+              </p>
+              <p className="text-sm text-gray-500">
+                Formato selecionado: {format.toUpperCase()}
               </p>
               <Button
                 onClick={handleOutputSelect}

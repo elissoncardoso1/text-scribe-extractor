@@ -8,6 +8,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader, FolderPlus, Folder } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import PDFUploader from "./PDFUploader";
 import TextDisplay from "./TextDisplay";
@@ -30,6 +37,7 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
   const [queue, setQueue] = useState<File[]>([]);
   const [outputPath, setOutputPath] = useState<string>("");
   const [overallProgress, setOverallProgress] = useState(0);
+  const [format, setFormat] = useState<"txt" | "docx">("txt");
   const { toast } = useToast();
 
   const handleFolderSelect = async (createNew: boolean) => {
@@ -91,7 +99,7 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
         result.fileName === file.name
           ? {
               ...result,
-              text: `Texto convertido do arquivo ${file.name}.\nSalvo em: ${outputPath}/${file.name}.txt`,
+              text: `Texto convertido do arquivo ${file.name}.\nSalvo em: ${outputPath}/${file.name}.${format}`,
               status: "completed",
               progress: 100
             }
@@ -115,6 +123,7 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
     setQueue([]);
     setOutputPath("");
     setOverallProgress(0);
+    setFormat("txt");
   };
 
   return (
@@ -156,6 +165,15 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
               <p className="text-sm text-gray-500">
                 Pasta selecionada: {outputPath}
               </p>
+              <Select value={format} onValueChange={(value: "txt" | "docx") => setFormat(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione o formato" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="txt">TXT</SelectItem>
+                  <SelectItem value="docx">DOCX</SelectItem>
+                </SelectContent>
+              </Select>
               <PDFUploader onFileSelect={handleFileSelect} maxFiles={999} />
             </div>
           )}
