@@ -6,8 +6,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader, FolderPlus, Folder } from "lucide-react";
+import { Loader, FolderPlus, Folder, Download } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import JSZip from 'jszip';
 import {
   Select,
   SelectContent,
@@ -126,6 +127,40 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
     setFormat("txt");
   };
 
+  const handleDownloadSingle = (result: ConversionResult) => {
+    if (!result.text) return;
+    
+    const blob = new Blob([result.text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${result.fileName}.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadAll = async () => {
+    const zip = new JSZip();
+    
+    results.forEach(result => {
+      if (result.text && result.status === "completed") {
+        zip.file(`${result.fileName}.${format}`, result.text);
+      }
+    });
+    
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `converted_files.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
@@ -191,6 +226,17 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
                 <div key={index} className="relative space-y-2">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">{result.fileName}</span>
+                    {result.status === "completed" && (
+                      <Button
+                        onClick={() => handleDownloadSingle(result)}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        Baixar
+                      </Button>
+                    )}
                     {result.status === "converting" && (
                       <Loader className="w-4 h-4 animate-spin text-pdf-DEFAULT" />
                     )}
@@ -214,7 +260,15 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
         </div>
 
         {step === "result" && (
-          <div className="flex justify-end">
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handleDownloadAll}
+              className="flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Baixar todos (.zip)
+            </Button>
             <Button
               variant="outline"
               onClick={resetConversion}

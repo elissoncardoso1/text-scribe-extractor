@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader, FolderOpen } from "lucide-react";
+import { Loader, FolderOpen, Download } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import {
   Select,
@@ -37,6 +37,20 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [progress, setProgress] = useState(0);
   const [format, setFormat] = useState<"txt" | "docx">("txt");
+
+  const handleDownload = () => {
+    if (!result?.text) return;
+    
+    const blob = new Blob([result.text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${result.fileName}.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleFileSelect = async (files: File[]) => {
     if (files.length > 0) {
@@ -141,9 +155,19 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
 
           {step === "result" && result && (
             <div>
-              <p className="text-sm text-gray-500 mb-4">
-                Arquivo salvo em: {result.outputPath}
-              </p>
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-gray-500">
+                  Arquivo salvo em: {result.outputPath}
+                </p>
+                <Button
+                  onClick={handleDownload}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Baixar arquivo
+                </Button>
+              </div>
               <TextDisplay 
                 fileName={result.fileName}
                 text={result.text}
