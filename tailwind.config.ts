@@ -25,16 +25,27 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#3498db",
+          light: "#5dade2",
+          dark: "#2980b9",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "#2ecc71",
+          light: "#54d98c",
+          dark: "#27ae60",
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
+          DEFAULT: "#e74c3c",
+          light: "#eb6b5e",
+          dark: "#c0392b",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        success: {
+          DEFAULT: "#3e8e41",
+          light: "#4caf50",
+          dark: "#2e7d32",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -53,9 +64,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         pdf: {
-          light: "#E3F2FD",
-          DEFAULT: "#2196F3",
-          dark: "#1976D2",
+          light: "#5dade2",
+          DEFAULT: "#3498db",
+          dark: "#2980b9",
         },
       },
       borderRadius: {
