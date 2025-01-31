@@ -2,7 +2,7 @@ import { useState } from "react";
 import ConversionDialog from "@/components/ConversionDialog";
 import BatchConversionDialog from "@/components/BatchConversionDialog";
 import { Button } from "@/components/ui/button";
-import { FileText, Files } from "lucide-react";
+import { FileText, File, Files } from "lucide-react";
 
 const Index = () => {
   const [singleDialogOpen, setSingleDialogOpen] = useState(false);
@@ -12,7 +12,7 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="text-center space-y-6 max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-900">
-          Converta PDF para TXT
+          Converta PDF para <span className="inline-flex items-center gap-2"><FileText className="w-6 h-6" /> ou <File className="w-6 h-6" /></span>
         </h1>
         <p className="text-xl text-gray-600">
           Transforme arquivos PDF em texto com facilidade
