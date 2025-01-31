@@ -1,69 +1,56 @@
-# Welcome to your Lovable project
+# Conversor de PDF para TXT
 
-## Project info
+Um aplicativo simples para converter arquivos PDF em texto, funcionando totalmente offline no seu computador.
 
-**URL**: https://lovable.dev/projects/10cb8448-d7ba-47d8-98ff-fce0b91fe90e
+## Como usar no MacBook
 
-## How can I edit this code?
+1. **Pré-requisitos**
 
-There are several ways of editing your application.
+Primeiro, instale o Node.js usando o Homebrew (se ainda não tiver o Homebrew instalado, visite [brew.sh](https://brew.sh)):
 
-**Use Lovable**
+```bash
+# Instalar Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/10cb8448-d7ba-47d8-98ff-fce0b91fe90e) and start prompting.
+# Instalar Node.js
+brew install node
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+2. **Instalação**
 
-**Use your preferred IDE**
+```bash
+# Clone o repositório
+git clone <URL_DO_REPOSITÓRIO>
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# Entre na pasta do projeto
+cd text-scribe-extractor
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Instale as dependências
+npm install
+```
 
-Follow these steps:
+3. **Executando o aplicativo**
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+O aplicativo estará disponível em `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Funcionalidades
 
-**Use GitHub Codespaces**
+- Conversão de PDF para TXT
+- Interface intuitiva
+- Funcionamento 100% offline
+- Download do texto extraído
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Notas importantes
 
-## What technologies are used for this project?
+- O aplicativo funciona completamente offline após a instalação
+- Todos os arquivos são processados localmente no seu computador
+- Nenhum dado é enviado para servidores externos
 
-This project is built with .
+## Suporte
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/10cb8448-d7ba-47d8-98ff-fce0b91fe90e) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Se encontrar algum problema, por favor abra uma issue no repositório.
