@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader, FolderPlus, Folder } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import PDFUploader from "./PDFUploader";
 import TextDisplay from "./TextDisplay";
@@ -20,6 +21,7 @@ interface ConversionResult {
   fileName: string;
   text: string;
   status: "pending" | "converting" | "completed" | "error";
+  progress: number;
 }
 
 const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProps) => {
@@ -27,11 +29,10 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
   const [results, setResults] = useState<ConversionResult[]>([]);
   const [queue, setQueue] = useState<File[]>([]);
   const [outputPath, setOutputPath] = useState<string>("");
+  const [overallProgress, setOverallProgress] = useState(0);
   const { toast } = useToast();
 
   const handleFolderSelect = async (createNew: boolean) => {
-    // Simulando seleção de pasta - em uma implementação real, 
-    // isso usaria a API do sistema de arquivos
     setOutputPath("/Users/Documents/PDFtoTXT");
     setStep("upload");
   };
@@ -54,37 +55,49 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
     const newResults = files.map(file => ({
       fileName: file.name,
       text: "",
-      status: "pending" as const
+      status: "pending" as const,
+      progress: 0
     }));
     
     setResults(prev => [...prev, ...newResults]);
 
-    // Processar arquivos em lotes de 10
+    const totalFiles = files.length;
+    let completedFiles = 0;
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       
-      // Atualizar status para converting
-      setResults(prev => prev.map((result, index) => 
+      setResults(prev => prev.map(result => 
         result.fileName === file.name
           ? { ...result, status: "converting" }
           : result
       ));
 
-      // Simular conversão
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simular progresso individual do arquivo
+      for (let progress = 0; progress <= 100; progress += 10) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        setResults(prev => prev.map(result => 
+          result.fileName === file.name
+            ? { ...result, progress }
+            : result
+        ));
+      }
       
-      // Atualizar com o resultado
-      setResults(prev => prev.map((result, index) => 
+      completedFiles++;
+      setOverallProgress((completedFiles / totalFiles) * 100);
+      
+      setResults(prev => prev.map(result => 
         result.fileName === file.name
           ? {
               ...result,
               text: `Texto convertido do arquivo ${file.name}.\nSalvo em: ${outputPath}/${file.name}.txt`,
-              status: "completed"
+              status: "completed",
+              progress: 100
             }
           : result
       ));
 
-      // Se for o último arquivo e ainda há arquivos na fila
       if (i === files.length - 1 && queue.length > 0) {
         const nextBatch = queue.slice(0, 10);
         const remainingQueue = queue.slice(10);
@@ -101,6 +114,7 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
     setResults([]);
     setQueue([]);
     setOutputPath("");
+    setOverallProgress(0);
   };
 
   return (
@@ -148,13 +162,22 @@ const BatchConversionDialog = ({ open, onOpenChange }: BatchConversionDialogProp
 
           {(step === "converting" || step === "result") && (
             <div className="space-y-4">
+              <div className="space-y-2 mb-6">
+                <Progress value={overallProgress} className="w-full" />
+                <div className={`px-3 py-1 text-sm rounded ${overallProgress === 100 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  {overallProgress === 100 ? 'Concluído' : 'Convertendo'}
+                </div>
+              </div>
+
               {results.map((result, index) => (
-                <div key={index} className="relative">
-                  {result.status === "converting" && (
-                    <div className="absolute right-2 top-2">
-                      <Loader className="w-5 h-5 animate-spin text-pdf-DEFAULT" />
-                    </div>
-                  )}
+                <div key={index} className="relative space-y-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium">{result.fileName}</span>
+                    {result.status === "converting" && (
+                      <Loader className="w-4 h-4 animate-spin text-pdf-DEFAULT" />
+                    )}
+                  </div>
+                  <Progress value={result.progress} className="w-full" />
                   <TextDisplay
                     fileName={result.fileName}
                     text={result.text || "Aguardando conversão..."}

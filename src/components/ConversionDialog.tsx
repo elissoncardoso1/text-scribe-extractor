@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader, FolderOpen } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import PDFUploader from "./PDFUploader";
 import TextDisplay from "./TextDisplay";
 
@@ -27,6 +28,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [outputPath, setOutputPath] = useState<string>("");
   const [result, setResult] = useState<ConversionResult | null>(null);
+  const [progress, setProgress] = useState(0);
 
   const handleFileSelect = async (files: File[]) => {
     if (files.length > 0) {
@@ -36,8 +38,6 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
   };
 
   const handleOutputSelect = async () => {
-    // Simulando seleção de pasta - em uma implementação real, 
-    // isso usaria a API do sistema de arquivos
     setOutputPath("/Users/Documents/PDFtoTXT");
     handleConversion();
   };
@@ -46,9 +46,13 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
     if (!selectedFile) return;
     
     setStep("converting");
+    setProgress(0);
     
-    // Simulando conversão
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulando conversão com progresso
+    for (let i = 0; i <= 100; i += 10) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      setProgress(i);
+    }
     
     setResult({
       fileName: selectedFile.name,
@@ -64,6 +68,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
     setSelectedFile(null);
     setOutputPath("");
     setResult(null);
+    setProgress(0);
   };
 
   return (
@@ -101,7 +106,12 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
 
           {step === "converting" && (
             <div className="flex flex-col items-center justify-center space-y-4 py-8">
-              <Loader className="w-8 h-8 animate-spin text-pdf-DEFAULT" />
+              <div className="w-full space-y-2">
+                <Progress value={progress} className="w-full" />
+                <div className={`px-3 py-1 text-sm rounded ${progress === 100 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  {progress === 100 ? 'Concluído' : 'Convertendo'}
+                </div>
+              </div>
               <p className="text-gray-600">Processando seu arquivo...</p>
             </div>
           )}
