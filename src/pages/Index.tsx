@@ -1,52 +1,34 @@
 import { useState } from "react";
-import PDFUploader from "@/components/PDFUploader";
-import TextDisplay from "@/components/TextDisplay";
-import { useToast } from "@/components/ui/use-toast";
+import ConversionDialog from "@/components/ConversionDialog";
+import { Button } from "@/components/ui/button";
+import { FileText } from "lucide-react";
 
 const Index = () => {
-  const [extractedText, setExtractedText] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-
-  const handleFileSelect = async (file: File) => {
-    setIsLoading(true);
-    try {
-      // Aqui você deve implementar a chamada para sua API que processa o PDF
-      // Por enquanto, vamos simular um delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      
-      // Simulando um texto extraído
-      setExtractedText("Este é um texto de exemplo extraído do PDF.\n\nPara implementar a extração real, você precisará criar uma API que utilize PyPDF2 ou pdfplumber e fazer a chamada para ela aqui.");
-      
-      toast({
-        title: "Sucesso!",
-        description: "Texto extraído com sucesso.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível extrair o texto do PDF.",
-      });
-      setExtractedText(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-2">
-          Extrator de Texto PDF
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <div className="text-center space-y-6 max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold text-gray-900">
+          Converta PDF para TXT
         </h1>
-        <p className="text-gray-600 text-center mb-8">
-          Faça upload de um arquivo PDF para extrair seu texto
+        <p className="text-xl text-gray-600">
+          Transforme arquivos PDF em texto com facilidade
         </p>
-        
-        <PDFUploader onFileSelect={handleFileSelect} />
-        <TextDisplay text={extractedText} isLoading={isLoading} />
+        <Button
+          onClick={() => setDialogOpen(true)}
+          size="lg"
+          className="mt-8"
+        >
+          <FileText className="mr-2" />
+          Escolha um arquivo PDF
+        </Button>
       </div>
+
+      <ConversionDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 };
