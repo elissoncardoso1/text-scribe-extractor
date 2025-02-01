@@ -29,13 +29,17 @@ const Index = () => {
               <img 
                 src="/lovable-uploads/5005748c-facc-4121-aa43-91a98f47eed9.png"
                 alt="TXT icon"
-                className="w-10 h-10" // Aumentado de w-6 h-6 para w-10 h-10
+                className="w-10 h-10"
               />
               <span className="text-sm ml-1">txt</span>
             </span>
             {" "}ou{" "}
             <span className="inline-flex items-center">
-              <Files className="w-10 h-10 text-primary" /> {/* Aumentado de w-6 h-6 para w-10 h-10 */}
+              <img 
+                src="/lovable-uploads/e5d9ef6f-2ab6-455d-a1b8-a722e879a018.png"
+                alt="DOCX icon"
+                className="w-10 h-10"
+              />
               <span className="text-sm ml-1">docx</span>
             </span>
           </span>
