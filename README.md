@@ -38,7 +38,7 @@ npm run dev
 
 O aplicativo estará disponível em `http://localhost:8080`
 
-## Criando um executável para Mac
+## Criando executáveis
 
 1. **Instale o pacote electron-builder globalmente**
 
@@ -52,11 +52,32 @@ npm install -g electron-builder
 # Construa o aplicativo
 npm run build
 
-# Crie o executável
+# Para MacOS (.dmg e .zip)
 electron-builder --mac
+
+# Para Windows (.exe instalável e portable)
+electron-builder --win
+
+# Para Linux (.AppImage, .deb, .rpm)
+electron-builder --linux
 ```
 
-O executável será criado na pasta `dist` do projeto.
+Os executáveis serão criados na pasta `release` do projeto.
+
+## Formatos disponíveis por sistema operacional
+
+### MacOS
+- `.dmg` - Instalador padrão do MacOS
+- `.zip` - Versão portátil compactada
+
+### Windows
+- `.exe` (NSIS) - Instalador padrão do Windows
+- `.exe` (Portable) - Versão portátil sem instalação
+
+### Linux
+- `.AppImage` - Executável universal para Linux
+- `.deb` - Pacote para sistemas baseados em Debian (Ubuntu, Linux Mint)
+- `.rpm` - Pacote para sistemas baseados em Red Hat (Fedora, CentOS)
 
 ## Funcionalidades
 

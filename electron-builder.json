@@ -10,7 +10,7 @@
   ],
   "mac": {
     "category": "public.app-category.productivity",
-    "target": ["dmg"],
+    "target": ["dmg", "zip"],
     "icon": "public/favicon.ico"
   },
   "dmg": {
@@ -26,5 +26,21 @@
         "path": "/Applications"
       }
     ]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64", "ia32"]
+      },
+      {
+        "target": "portable"
+      }
+    ],
+    "icon": "public/favicon.ico"
+  },
+  "linux": {
+    "target": ["AppImage", "deb", "rpm"],
+    "category": "Utility"
   }
 }
