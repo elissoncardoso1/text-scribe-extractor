@@ -26,12 +26,12 @@ const Index = () => {
           Converta PDF para{" "}
           <span className="inline-flex items-center gap-2">
             <span className="inline-flex items-center">
-              <FileText className="w-6 h-6" />
+              <FileText className="w-6 h-6 text-primary" />
               <span className="text-sm ml-1">txt</span>
             </span>
             {" "}ou{" "}
             <span className="inline-flex items-center">
-              <Files className="w-6 h-6" />
+              <Files className="w-6 h-6 text-primary" />
               <span className="text-sm ml-1">docx</span>
             </span>
           </span>
