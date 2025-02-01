@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { ButtonProps, buttonVariants } from "./button";
 import { cn } from "@/lib/utils";
 
-interface AnimatedButtonProps extends ButtonProps {
+type AnimatedButtonProps = ButtonProps & {
   children: React.ReactNode;
-}
+} & Omit<HTMLMotionProps<"button">, keyof ButtonProps>;
 
 const AnimatedButton = ({ 
   children, 
