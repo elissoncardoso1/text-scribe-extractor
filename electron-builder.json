@@ -1,6 +1,6 @@
 {
-  "appId": "com.text-scribe-extractor.app",
-  "productName": "Text Scribe Extractor",
+  "appId": "com.textflow.app",
+  "productName": "TextFlow",
   "directories": {
     "output": "release"
   },

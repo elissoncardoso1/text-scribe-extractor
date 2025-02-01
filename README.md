@@ -1,4 +1,4 @@
-# Conversor de PDF para TXT/DOCX
+# TextFlow
 
 Um aplicativo simples para converter arquivos PDF em texto ou DOCX, funcionando totalmente offline no seu computador.
 
@@ -23,7 +23,7 @@ brew install node
 git clone <URL_DO_REPOSITÓRIO>
 
 # Entre na pasta do projeto
-cd text-scribe-extractor
+cd textflow
 
 # Instale as dependências
 npm install
