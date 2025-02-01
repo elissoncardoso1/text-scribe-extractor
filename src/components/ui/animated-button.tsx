@@ -19,7 +19,7 @@ const AnimatedButton = ({
       whileTap={{ scale: 0.95 }}
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400 }}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </motion.button>
