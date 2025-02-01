@@ -1,17 +1,28 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import ConversionDialog from "@/components/ConversionDialog";
 import BatchConversionDialog from "@/components/BatchConversionDialog";
-import { Button } from "@/components/ui/button";
-import { FileText, File, Files } from "lucide-react";
+import AnimatedButton from "@/components/ui/animated-button";
+import { FileText, Files } from "lucide-react";
 
 const Index = () => {
   const [singleDialogOpen, setSingleDialogOpen] = useState(false);
   const [batchDialogOpen, setBatchDialogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4"
+    >
       <div className="text-center space-y-6 max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="text-4xl font-bold text-gray-900"
+        >
           Converta PDF para{" "}
           <span className="inline-flex items-center gap-2">
             <span className="inline-flex items-center">
@@ -20,24 +31,37 @@ const Index = () => {
             </span>
             {" "}ou{" "}
             <span className="inline-flex items-center">
-              <File className="w-6 h-6" />
+              <Files className="w-6 h-6" />
               <span className="text-sm ml-1">docx</span>
             </span>
           </span>
-        </h1>
-        <p className="text-xl text-gray-600">
+        </motion.h1>
+        
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="text-xl text-gray-600"
+        >
           Transforme arquivos PDF em texto com facilidade
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-          <Button
+        </motion.p>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center mt-8"
+        >
+          <AnimatedButton
             onClick={() => setSingleDialogOpen(true)}
             size="lg"
             className="flex items-center gap-2"
           >
             <FileText className="w-5 h-5" />
             Converter um arquivo
-          </Button>
-          <Button
+          </AnimatedButton>
+          
+          <AnimatedButton
             onClick={() => setBatchDialogOpen(true)}
             size="lg"
             variant="outline"
@@ -45,8 +69,8 @@ const Index = () => {
           >
             <Files className="w-5 h-5" />
             Conversão em massa
-          </Button>
-        </div>
+          </AnimatedButton>
+        </motion.div>
       </div>
 
       <ConversionDialog
@@ -59,7 +83,7 @@ const Index = () => {
         open={batchDialogOpen}
         onOpenChange={setBatchDialogOpen}
       />
-    </div>
+    </motion.div>
   );
 };
 

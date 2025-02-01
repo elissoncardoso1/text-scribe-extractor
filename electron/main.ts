@@ -5,17 +5,30 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    show: false, // Oculta a janela até que o conteúdo esteja carregado
+    show: false,
     webPreferences: {
-      nodeIntegration: false, // Desativa acesso direto ao Node.js
-      contextIsolation: true, // Isola o contexto de execução
-      preload: path.join(__dirname, 'preload.js'), // Arquivo intermediário seguro
-      backgroundThrottling: false // Evita queda de FPS quando em segundo plano
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+      backgroundThrottling: false,
+      spellcheck: false,
+      enableRemoteModule: false
     }
   });
 
   win.once('ready-to-show', () => {
-    win.show(); // Mostra a janela somente quando tudo estiver pronto
+    win.setOpacity(0);
+    win.show();
+    win.setBounds({ width: 1200, height: 800 });
+    let opacity = 0;
+    const fadeIn = setInterval(() => {
+      if (opacity < 1) {
+        opacity += 0.05;
+        win.setOpacity(opacity);
+      } else {
+        clearInterval(fadeIn);
+      }
+    }, 50);
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
