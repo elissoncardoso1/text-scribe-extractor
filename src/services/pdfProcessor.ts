@@ -1,9 +1,10 @@
 import { getDocument, GlobalWorkerOptions, version, OPS } from 'pdfjs-dist';
 import { createWorker } from 'tesseract.js';
 import { PDFDocument } from 'pdf-lib';
+import * as pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 
-// Configurar worker do PDF.js
-GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.js`;
+// Configurar worker do PDF.js usando o worker local
+GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 interface ProcessedPDF {
   text: string;
