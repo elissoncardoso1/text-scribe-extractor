@@ -1,9 +1,10 @@
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions, version } from 'pdfjs-dist';
 import { createWorker } from 'tesseract.js';
 import { PDFDocument } from 'pdf-lib';
+import { OPS } from 'pdfjs-dist';
 
 // Configurar worker do PDF.js
-GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${getDocument.version}/pdf.worker.js`;
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.js`;
 
 interface ProcessedPDF {
   text: string;
@@ -33,8 +34,8 @@ export class PDFProcessor {
       const pdfJS = await getDocument(arrayBuffer).promise;
       
       const structure = {
-        titles: [],
-        paragraphs: [],
+        titles: [] as string[],
+        paragraphs: [] as string[],
         tables: [] as string[][],
       };
 
@@ -71,7 +72,9 @@ export class PDFProcessor {
         
         // Verificar se há imagens e fazer OCR se necessário
         const operatorList = await page.getOperatorList();
-        const hasImages = operatorList.fnArray.includes(PDFDocument.Ops.paintJpegXObject);
+        const hasImages = operatorList.fnArray.some(
+          (fn: number) => fn === OPS.paintJpegXObject || fn === OPS.paintImageXObject
+        );
         
         if (hasImages) {
           const viewport = page.getViewport({ scale: 1.5 });

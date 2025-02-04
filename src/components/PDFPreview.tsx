@@ -14,7 +14,7 @@ interface PDFPreviewProps {
 const PDFPreview = ({ text, structure }: PDFPreviewProps) => {
   return (
     <div className="w-full space-y-4">
-      {structure.titles.length > 0 && (
+      {structure.titles && structure.titles.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">Títulos Detectados</h3>
           <ul className="list-disc pl-5">
@@ -25,14 +25,14 @@ const PDFPreview = ({ text, structure }: PDFPreviewProps) => {
         </div>
       )}
 
-      {structure.tables.length > 0 && (
+      {structure.tables && structure.tables.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">Tabelas Detectadas</h3>
           {structure.tables.map((table, tableIndex) => (
             <Table key={tableIndex}>
               <TableHeader>
                 <TableRow>
-                  {table[0].map((header, index) => (
+                  {table[0]?.map((header, index) => (
                     <TableHead key={index}>{header}</TableHead>
                   ))}
                 </TableRow>
