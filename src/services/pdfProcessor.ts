@@ -10,7 +10,7 @@ interface ProcessedPDF {
   structure: {
     titles: string[];
     paragraphs: string[];
-    tables: Array<Array<string[]>>;
+    tables: string[][][];
   };
   hasImages: boolean;
 }
@@ -35,7 +35,7 @@ export class PDFProcessor {
       const structure = {
         titles: [] as string[],
         paragraphs: [] as string[],
-        tables: [] as Array<Array<string[]>>,
+        tables: [] as string[][][],
       };
 
       const processedPages: string[] = [];
@@ -74,7 +74,7 @@ export class PDFProcessor {
         // Verifica se há imagens
         const operatorList = await page.getOperatorList();
         const hasPageImages = operatorList.fnArray.some(
-          (fn: number) => fn === OPS.paintXObject || fn === OPS.paintInlineImageXObject
+          (fn: number) => fn === OPS.paintJpegXObject || fn === OPS.paintImageXObject
         );
 
         hasImages ||= hasPageImages;

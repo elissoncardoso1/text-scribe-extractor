@@ -33,7 +33,7 @@ interface ConversionResult {
   structure: {
     titles: string[];
     paragraphs: string[];
-    tables: string[][];
+    tables: string[][][];
   };
 }
 

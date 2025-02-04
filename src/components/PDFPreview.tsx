@@ -7,7 +7,7 @@ interface PDFPreviewProps {
   structure: {
     titles: string[];
     paragraphs: string[];
-    tables: Array<Array<string[]>>;
+    tables: string[][][];
   };
 }
 
@@ -33,7 +33,7 @@ const PDFPreview = ({ text, structure }: PDFPreviewProps) => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {Array.isArray(table[0]) && table[0].map((header, index) => (
+                    {table[0]?.map((header, index) => (
                       <TableHead key={index}>{header}</TableHead>
                     ))}
                   </TableRow>
@@ -41,7 +41,7 @@ const PDFPreview = ({ text, structure }: PDFPreviewProps) => {
                 <TableBody>
                   {table.slice(1).map((row, rowIndex) => (
                     <TableRow key={rowIndex}>
-                      {Array.isArray(row) && row.map((cell, cellIndex) => (
+                      {row.map((cell, cellIndex) => (
                         <TableCell key={cellIndex}>{cell}</TableCell>
                       ))}
                     </TableRow>
