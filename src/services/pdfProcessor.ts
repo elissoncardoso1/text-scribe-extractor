@@ -71,10 +71,10 @@ export class PDFProcessor {
         }
         if (lineText) structure.paragraphs.push(lineText);
 
-        // Verifica se há imagens
+        // Verifica se há imagens usando a propriedade correta do OPS
         const operatorList = await page.getOperatorList();
         const hasPageImages = operatorList.fnArray.some(
-          (fn: number) => fn === OPS.paintJpegXObject || fn === OPS.paintImageXObject
+          (fn: number) => fn === OPS.paintXObject
         );
 
         hasImages ||= hasPageImages;
