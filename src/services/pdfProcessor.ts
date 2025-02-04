@@ -1,7 +1,6 @@
-import { getDocument, GlobalWorkerOptions, version } from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions, version, OPS } from 'pdfjs-dist';
 import { createWorker } from 'tesseract.js';
 import { PDFDocument } from 'pdf-lib';
-import { OPS } from 'pdfjs-dist';
 
 // Configurar worker do PDF.js
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.js`;
@@ -11,13 +10,13 @@ interface ProcessedPDF {
   structure: {
     titles: string[];
     paragraphs: string[];
-    tables: string[][];
+    tables: Array<Array<string[]>>;
   };
   hasImages: boolean;
 }
 
 export class PDFProcessor {
-  private worker: any = null;
+  private worker: Tesseract.Worker | null = null;
 
   async initialize() {
     if (!this.worker) {
@@ -36,75 +35,86 @@ export class PDFProcessor {
       const structure = {
         titles: [] as string[],
         paragraphs: [] as string[],
-        tables: [] as string[][],
+        tables: [] as Array<Array<string[]>>,
       };
 
       const processedPages: string[] = [];
-      
+      let hasImages = false;
+
       for (let i = 1; i <= pdfJS.numPages; i++) {
         const page = await pdfJS.getPage(i);
         const textContent = await page.getTextContent();
         
         let pageText = '';
-        let currentY = null;
+        let currentY: number | null = null;
         let lineText = '';
-        
-        // Processar elementos da página
+
         for (const item of textContent.items as any[]) {
-          // Detectar títulos baseado no tamanho da fonte
-          if (item.height > 14) {
-            structure.titles.push(item.str);
+          const textItem = item as { str: string; transform: number[]; height: number };
+
+          // Detecta títulos baseado no tamanho da fonte
+          if (textItem.height > 14) {
+            structure.titles.push(textItem.str);
           }
-          
-          // Agrupar texto por linha
-          if (currentY === null || currentY !== item.transform[5]) {
+
+          // Agrupa texto por linha
+          if (currentY === null || currentY !== textItem.transform[5]) {
             if (lineText) {
               pageText += lineText + '\n';
               structure.paragraphs.push(lineText);
             }
-            lineText = item.str;
+            lineText = textItem.str;
           } else {
-            lineText += ' ' + item.str;
+            lineText += ' ' + textItem.str;
           }
-          
-          currentY = item.transform[5];
+          currentY = textItem.transform[5];
         }
-        
-        // Verificar se há imagens e fazer OCR se necessário
+        if (lineText) structure.paragraphs.push(lineText);
+
+        // Verifica se há imagens
         const operatorList = await page.getOperatorList();
-        const hasImages = operatorList.fnArray.some(
-          (fn: number) => fn === OPS.paintJpegXObject || fn === OPS.paintImageXObject
+        const hasPageImages = operatorList.fnArray.some(
+          (fn: number) => fn === OPS.paintXObject || fn === OPS.paintInlineImageXObject
         );
-        
-        if (hasImages) {
-          const viewport = page.getViewport({ scale: 1.5 });
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          
-          await page.render({
-            canvasContext: context!,
-            viewport: viewport
-          }).promise;
-          
-          const { data: { text: ocrText } } = await this.worker.recognize(canvas);
+
+        hasImages ||= hasPageImages;
+
+        if (hasPageImages) {
+          const ocrText = await this.extractTextFromImages(page);
           pageText += '\n' + ocrText;
         }
-        
+
         processedPages.push(pageText);
       }
 
       return {
         text: processedPages.join('\n'),
         structure,
-        hasImages: processedPages.some(page => page.includes('[Image]'))
+        hasImages,
       };
     } catch (error) {
       console.error('Erro ao processar PDF:', error);
       throw new Error(this.getErrorMessage(error));
     }
+  }
+
+  private async extractTextFromImages(page: any): Promise<string> {
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      console.warn('Contexto 2D não disponível para OCR');
+      return '';
+    }
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({ canvasContext: context, viewport }).promise;
+    
+    const { data: { text: ocrText } } = await this.worker!.recognize(canvas);
+    return ocrText;
   }
 
   private getErrorMessage(error: any): string {

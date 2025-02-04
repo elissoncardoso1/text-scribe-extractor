@@ -7,7 +7,7 @@ interface PDFPreviewProps {
   structure: {
     titles: string[];
     paragraphs: string[];
-    tables: string[][];
+    tables: Array<Array<string[]>>;
   };
 }
 
@@ -29,24 +29,26 @@ const PDFPreview = ({ text, structure }: PDFPreviewProps) => {
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">Tabelas Detectadas</h3>
           {structure.tables.map((table, tableIndex) => (
-            <Table key={tableIndex}>
-              <TableHeader>
-                <TableRow>
-                  {table[0]?.map((header, index) => (
-                    <TableHead key={index}>{header}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {table.slice(1).map((row, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                      <TableCell key={cellIndex}>{cell}</TableCell>
+            <div key={tableIndex} className="mb-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {Array.isArray(table[0]) && table[0].map((header, index) => (
+                      <TableHead key={index}>{header}</TableHead>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {table.slice(1).map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {Array.isArray(row) && row.map((cell, cellIndex) => (
+                        <TableCell key={cellIndex}>{cell}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ))}
         </div>
       )}
