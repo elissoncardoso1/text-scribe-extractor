@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader, FolderOpen, Download } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,
@@ -16,7 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PDFUploader from "./PDFUploader";
-import TextDisplay from "./TextDisplay";
+import PDFPreview from "./PDFPreview";
+import { pdfProcessor } from "@/services/pdfProcessor";
 
 interface ConversionDialogProps {
   open: boolean;
@@ -28,15 +30,21 @@ interface ConversionResult {
   fileName: string;
   text: string;
   outputPath?: string;
+  structure: {
+    titles: string[];
+    paragraphs: string[];
+    tables: string[][];
+  };
 }
 
 const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) => {
-  const [step, setStep] = useState<"upload" | "output" | "converting" | "result">("upload");
+  const [step, setStep] = useState<"upload" | "output" | "converting" | "preview" | "result">("upload");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [outputPath, setOutputPath] = useState<string>("");
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [progress, setProgress] = useState(0);
   const [format, setFormat] = useState<"txt" | "docx">("txt");
+  const { toast } = useToast();
 
   const handleDownload = () => {
     if (!result?.text) return;
@@ -67,22 +75,43 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
   const handleConversion = async () => {
     if (!selectedFile) return;
     
-    setStep("converting");
-    setProgress(0);
-    
-    // Simulando conversão com progresso
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      setProgress(i);
+    try {
+      setStep("converting");
+      setProgress(0);
+      
+      // Simular progresso
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 10, 90));
+      }, 500);
+
+      const processed = await pdfProcessor.processFile(selectedFile);
+      
+      clearInterval(progressInterval);
+      setProgress(100);
+      
+      setResult({
+        fileName: selectedFile.name,
+        text: processed.text,
+        structure: processed.structure,
+        outputPath
+      });
+      
+      if (processed.hasImages) {
+        toast({
+          title: "OCR Ativado",
+          description: "Foram detectadas imagens no PDF. O OCR foi utilizado para extrair o texto.",
+        });
+      }
+      
+      setStep("preview");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro na conversão",
+        description: error.message,
+      });
+      setStep("upload");
     }
-    
-    setResult({
-      fileName: selectedFile.name,
-      text: `Texto convertido do arquivo ${selectedFile.name}.\nSalvo em: ${outputPath}/${selectedFile.name}.${format}`,
-      outputPath
-    });
-    
-    setStep("result");
   };
 
   const resetConversion = () => {
@@ -102,6 +131,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
             {step === "upload" && "Selecione o arquivo PDF"}
             {step === "output" && "Escolha onde salvar"}
             {step === "converting" && "Convertendo arquivo..."}
+            {step === "preview" && "Prévia da conversão"}
             {step === "result" && "Texto extraído com sucesso"}
           </DialogTitle>
         </DialogHeader>
@@ -153,6 +183,26 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
             </div>
           )}
 
+          {step === "preview" && result && (
+            <div className="space-y-4">
+              <PDFPreview text={result.text} structure={result.structure} />
+              <div className="flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep("result")}
+                >
+                  Confirmar e Salvar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={resetConversion}
+                >
+                  Converter outro arquivo
+                </Button>
+              </div>
+            </div>
+          )}
+
           {step === "result" && result && (
             <div>
               <div className="flex justify-between items-center mb-4">
@@ -168,11 +218,7 @@ const ConversionDialog = ({ open, onOpenChange, mode }: ConversionDialogProps) =
                   Baixar arquivo
                 </Button>
               </div>
-              <TextDisplay 
-                fileName={result.fileName}
-                text={result.text}
-                isLoading={false}
-              />
+              <PDFPreview text={result.text} structure={result.structure} />
             </div>
           )}
         </div>
